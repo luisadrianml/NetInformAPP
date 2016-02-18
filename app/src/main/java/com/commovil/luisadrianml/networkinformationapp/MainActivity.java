@@ -11,14 +11,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneStateListener;
+import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
+import android.telephony.gsm.GsmCellLocation;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_READ_PHONE_STATE = 1;
@@ -28,7 +30,14 @@ public class MainActivity extends AppCompatActivity {
     TextView net_operator;
     TextView net_type;
     TextView msisdn;
+    TextView cid;
+    TextView lac;
+    TextView gsmCellLocation;
     TelephonyManager teleManager;
+    CdmaCellLocation cellLocation;
+    String cdma_cell_location;
+    int gsm_signal;
+    GsmCellLocation cellGsmLocation;
     boolean permission_granted = true;
 
 
@@ -45,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         net_operator = (TextView) findViewById(R.id.net_ope);
         net_type = (TextView) findViewById(R.id.net_type);
         msisdn = (TextView) findViewById(R.id.msisdn);
+        cid = (TextView) findViewById(R.id.cid);
+        lac = (TextView) findViewById(R.id.lac);
+        gsmCellLocation = (TextView) findViewById(R.id.gsmcelllocation);
+
 
         teleManager =  (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         askForPermission();
@@ -54,14 +67,16 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (permission_granted) {
                     sim_sn.setText(teleManager.getSimSerialNumber());
                     sim_op.setText(teleManager.getSimOperatorName());
                     sim_imsi.setText(teleManager.getSubscriberId());
                     net_operator.setText(teleManager.getNetworkOperatorName());
-                    net_type.setText(getPhoneType(teleManager.getPhoneType()) + " - " + getNetworkType(teleManager.getNetworkType()));
+                    net_type.setText(Helper.getPhoneType(teleManager.getPhoneType()) + " - " + Helper.getNetworkType(teleManager.getNetworkType()));
                     msisdn.setText(teleManager.getLine1Number());
+                    cid.setText(Integer.toString(Helper.getGSMCid(teleManager)));
+                    lac.setText(Integer.toString(Helper.getGSMLac(teleManager)));
+                    gsmCellLocation.setText(Integer.toString(gsm_signal));
 
                     Snackbar.make(view, R.string.data_updated, Snackbar.LENGTH_LONG)
                             .setAction(R.string.clear, new View.OnClickListener() {
@@ -101,102 +116,38 @@ public class MainActivity extends AppCompatActivity {
                             }).show();
 
                 }
-
-
             }
         });
+
+        PhoneStateListener listener = new PhoneStateListener() {
+            @Override
+            public void onSignalStrengthsChanged(SignalStrength signalStrength) {
+                String ssignal = signalStrength.toString();
+                String[] parts = ssignal.split(" ");
+                if (teleManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_LTE){
+
+                    int ltesignal = Integer.parseInt(parts[9]);
+
+                    // check to see if it get's the right signal in dB, a signal below -2
+                    if(ltesignal < -2) {
+                        gsm_signal = ltesignal;
+                    }
+                }
+                // Else 3G
+                else {
+                    if (signalStrength.getGsmSignalStrength() != 99) {
+
+                        gsm_signal = -113 + 2 * signalStrength.getGsmSignalStrength();
+                    }
+                }
+
+            }
+        };
+
+        teleManager.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+
     }
 
-
-
-    private String getPhoneType(int phoneType) {
-        String valuePhoneType  = null;
-        switch (phoneType)
-        {
-            case (TelephonyManager.PHONE_TYPE_CDMA):
-                valuePhoneType ="CDMA";
-                break;
-            case (TelephonyManager.PHONE_TYPE_GSM):
-                valuePhoneType ="GSM";
-                break;
-            case (TelephonyManager.PHONE_TYPE_NONE):
-                valuePhoneType ="NONE";
-                break;
-        }
-        return valuePhoneType;
-    }
-
-    private String getNetworkType(int networkType) {
-        String valueNetworkType = null;
-        switch (networkType) {
-            case TelephonyManager.NETWORK_TYPE_1xRTT: {
-                valueNetworkType = "1xRTT";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_CDMA: {
-                valueNetworkType = "CDMA";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_EDGE: {
-                valueNetworkType = "EDGE";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_EHRPD: {
-                valueNetworkType = "EHRPD";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_EVDO_0: {
-                valueNetworkType = "EVDO_0";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_EVDO_A: {
-                valueNetworkType = "EVDO_A";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_EVDO_B: {
-                valueNetworkType = "EDVO_B";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_GPRS: {
-                valueNetworkType = "GPRS";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_HSDPA: {
-                valueNetworkType = "HSDPA";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_HSPA: {
-                valueNetworkType = "HSPA";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_HSPAP: {
-                valueNetworkType = "HSPAP";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_HSUPA: {
-                valueNetworkType = "HSUPA";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_IDEN: {
-                valueNetworkType = "IDEN";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_LTE: {
-                valueNetworkType = "LTE";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_UMTS: {
-                valueNetworkType = "UMTS";
-                break;
-            }
-            case TelephonyManager.NETWORK_TYPE_UNKNOWN: {
-                valueNetworkType = "Unknown";
-                break;
-            }
-        }
-
-        return valueNetworkType;
-    }
 
     private void askForPermission() {
         // Here, thisActivity is the current activity
