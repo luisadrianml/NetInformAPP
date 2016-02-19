@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView2"
+                    android:id="@+id/sim_sn"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -61,7 +61,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView4"
+                    android:id="@+id/sim_op"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -82,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView6"
+                    android:id="@+id/sim_imsi"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView9"
+                    android:id="@+id/net_ope"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -124,7 +124,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView28"
+                    android:id="@+id/net_type"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -145,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView30"
+                    android:id="@+id/msisdn"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -167,7 +167,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView32"
+                    android:id="@+id/cid"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -189,7 +189,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView34"
+                    android:id="@+id/lac"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
@@ -211,7 +211,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/empty"
-                    android:id="@+id/textView36"
+                    android:id="@+id/gsmcelllocation"
                     android:layout_marginLeft="10dp" />
             </TableRow>
 
