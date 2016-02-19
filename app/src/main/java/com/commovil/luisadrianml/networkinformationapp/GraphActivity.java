@@ -57,9 +57,15 @@ public class GraphActivity extends AppCompatActivity {
         setContentView(chart);
 
         YAxis rightYA = chart.getAxis(YAxis.AxisDependency.RIGHT);
-
         rightYA.setAxisMaxValue(120);
         rightYA.setAxisMinValue(1);
+
+        chart.getAxisLeft().setEnabled(false);
+        chart.getAxisRight().setEnabled(false);
+        chart.getLegend().setEnabled(false);
+        chart.setScaleEnabled(false);
+        chart.setDoubleTapToZoomEnabled(false);
+        chart.setDrawValueAboveBar(false);
 
         BarData data = new BarData(labels, dataset);
         chart.setData(data);
