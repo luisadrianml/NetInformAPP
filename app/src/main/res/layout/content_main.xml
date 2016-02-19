@@ -228,7 +228,8 @@
                     android:text="@string/graph"
                     android:id="@+id/button"
                     android:layout_weight="1"
-                    android:onClick="signalGraph" />
+                    android:onClick="signalGraph"
+                    style="@style/MyButton" />
 
                 <Button
                     android:layout_width="wrap_content"
@@ -236,7 +237,8 @@
                     android:text="@string/cell"
                     android:id="@+id/button2"
                     android:layout_weight="1"
-                    android:onClick="cellTowerLocation" />
+                    android:onClick="cellTowerLocation"
+                    style="@style/MyButton" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
