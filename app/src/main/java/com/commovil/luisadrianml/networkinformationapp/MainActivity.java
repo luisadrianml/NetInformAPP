@@ -119,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
                                     net_operator.setText(R.string.empty);
                                     net_type.setText(R.string.empty);
                                     msisdn.setText(R.string.empty);
+                                    cid.setText(R.string.empty);
+                                    lac.setText(R.string.empty);
+                                    gsmCellLocation.setText(R.string.empty);
                                 }
                             }).show();
 
@@ -138,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
                                     net_operator.setText(R.string.empty);
                                     net_type.setText(R.string.empty);
                                     msisdn.setText(R.string.empty);
+                                    cid.setText(R.string.empty);
+                                    lac.setText(R.string.empty);
+                                    gsmCellLocation.setText(R.string.empty);
                                 }
                             }).show();
 
@@ -165,13 +171,9 @@ public class MainActivity extends AppCompatActivity {
                         gsm_signal = -113 + 2 * signalStrength.getGsmSignalStrength();
                     }
                 }
-
             }
         };
-
         teleManager.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
-
-
     }
 
 
