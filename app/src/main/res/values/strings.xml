@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NetInformationApp</string>
+    <string name="app_name">Network Information</string>
     <string name="action_about">About</string>
 
     <string name="empty">Empty</string>
@@ -12,13 +12,17 @@
     <string name="msisdn">MSISDN:</string>
     <string name="cid">CID:</string>
     <string name="lac">LAC:</string>
+    <string name="signal">SIGNAL:</string>
 
     <string name="clear">CLEAR</string>
     <string name="okay">OK</string>
     <string name="data_updated">Data has been updated</string>
     <string name="data_emptied">Data has been emptied</string>
+    <string name="nodata">No data available</string>
     <string name="data_permission">Permissions are needed</string>
 
+    <string name="graph">Signal Graph</string>
+    <string name="cell">Cell Tower Location</string>
 
 
     <!-- Example settings for Notifications -->

@@ -198,7 +198,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Unknom"
+                android:text="@string/signal"
                 android:id="@+id/textView6" />
 
             <TextView
@@ -209,6 +209,30 @@
                 android:id="@+id/gsmcelllocation"
                 android:layout_marginLeft="10dp" />
         </TableRow>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/graph"
+                android:id="@+id/button"
+                android:layout_weight="1"
+                android:onClick="signalGraph" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cell"
+                android:id="@+id/button2"
+                android:layout_weight="1"
+                android:onClick="cellTowerLocation" />
+        </LinearLayout>
 
     </LinearLayout>
 </LinearLayout>
