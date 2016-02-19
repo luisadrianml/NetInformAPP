@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_about) {
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
             alertDialog.setTitle(R.string.action_about);
-            alertDialog.setMessage("Deployment by Luis Martinez");
+            alertDialog.setMessage(getApplicationContext().getResources().getString(R.string.developed));
             alertDialog.show();
             return true;
         }
@@ -279,8 +279,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             pd = new ProgressDialog(context);
-            pd.setTitle("Getting Location");
-            pd.setMessage("Please Wait...");
+            pd.setTitle(R.string.getLoc);
+            pd.setMessage(context.getResources().getString(R.string.wait));
             pd.setCancelable(false);
             pd.setIndeterminate(true);
             pd.show();
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void run() {
-                        Toast.makeText(context, "Exception requesting location: " + err, Toast.LENGTH_LONG).show();
+                        Toast.makeText(context, R.string.exception_map + err, Toast.LENGTH_LONG).show();
                     }
 
                 });
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
                         context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?q=" + lat + "," + lng + "&iwloc=A")));
                     }
                 } catch (Exception e) {
-                    Toast.makeText(context, "Exception parsing response: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, R.string.exception_map + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
             }

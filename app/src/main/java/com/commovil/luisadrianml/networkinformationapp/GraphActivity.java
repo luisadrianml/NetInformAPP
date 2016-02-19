@@ -30,13 +30,13 @@ public class GraphActivity extends AppCompatActivity {
         entries.add(new BarEntry(120f, 3));
 
 
-        BarDataSet dataset = new BarDataSet(entries, "Signal Strength: "+gsm_signal);
+        BarDataSet dataset = new BarDataSet(entries, getApplicationContext().getResources().getString(R.string.signal_stre)+gsm_signal);
         gsm_signal = gsm_signal*-1;
         ArrayList<String> labels = new ArrayList<String>();
-        labels.add("Minima");
-        labels.add("Normal");
-        labels.add("Buena");
-        labels.add("Idónea");
+        labels.add(getApplicationContext().getResources().getString(R.string.min));
+        labels.add(getApplicationContext().getResources().getString(R.string.normal));
+        labels.add(getApplicationContext().getResources().getString(R.string.good));
+        labels.add(getApplicationContext().getResources().getString(R.string.perfect));
 
         int[] colors;
         if (gsm_signal<= 70) {
@@ -63,6 +63,6 @@ public class GraphActivity extends AppCompatActivity {
 
         BarData data = new BarData(labels, dataset);
         chart.setData(data);
-        chart.setDescription("Valores en dB");
+        chart.setDescription(getApplicationContext().getResources().getString(R.string.dbValue));
     }
 }

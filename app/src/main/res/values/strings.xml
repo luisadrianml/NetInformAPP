@@ -14,6 +14,22 @@
     <string name="lac">LAC:</string>
     <string name="signal">SIGNAL:</string>
 
+    <string name="min">Minimal</string>
+    <string name="good">Good</string>
+    <string name="normal">Normal</string>
+    <string name="perfect">Perfect</string>
+
+    <string name="dbValue">dB values</string>
+
+    <string name="getLoc">Getting Location</string>
+    <string name="wait">Please, wait...</string>
+    <string name="exception_map">Exception requesting location: </string>
+    <string name="signal_stre">Signal Strength: </string>
+
+    <string name="developed">Deployment by Luis Martinez</string>
+
+
+
     <string name="clear">CLEAR</string>
     <string name="okay">OK</string>
     <string name="data_updated">Data has been updated</string>
