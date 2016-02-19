@@ -2,8 +2,12 @@ package com.commovil.luisadrianml.networkinformationapp;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,16 +18,27 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneStateListener;
 import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.telephony.cdma.CdmaCellLocation;
-import android.telephony.gsm.GsmCellLocation;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
     public static final int REQUEST_READ_PHONE_STATE = 1;
+    private static final String API_KEY = "AIzaSyDipTYsh9TO8sIH55tt62zKM40iYkZtkSY";
+    public final static String GSM_SIGNAL = "com.commovil.networkinformationapp.SIGNAL";
+
+
     TextView sim_sn;
     TextView sim_op;
     TextView sim_imsi;
@@ -33,13 +48,17 @@ public class MainActivity extends AppCompatActivity {
     TextView cid;
     TextView lac;
     TextView gsmCellLocation;
+
     TelephonyManager teleManager;
-    CdmaCellLocation cellLocation;
-    String cdma_cell_location;
     int gsm_signal;
-    GsmCellLocation cellGsmLocation;
+    String cidValue;
+    String lacValue;
+    String mccValue;
+    String mncValue;
+    int gsm_signalValue;
     boolean permission_granted = true;
 
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        context = this;
 
         sim_sn = (TextView) findViewById(R.id.sim_sn);
         sim_op = (TextView) findViewById(R.id.sim_op);
@@ -58,25 +78,31 @@ public class MainActivity extends AppCompatActivity {
         lac = (TextView) findViewById(R.id.lac);
         gsmCellLocation = (TextView) findViewById(R.id.gsmcelllocation);
 
-
-        teleManager =  (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        teleManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         askForPermission();
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (permission_granted) {
+
+                    cidValue = Integer.toString(Helper.getGSMCid(teleManager));
+                    lacValue = Integer.toString(Helper.getGSMLac(teleManager));
+                    mccValue = teleManager.getSubscriberId().substring(0, 3);
+                    mncValue = teleManager.getSubscriberId().substring(3, 5);
+                    gsm_signalValue = gsm_signal;
+
                     sim_sn.setText(teleManager.getSimSerialNumber());
                     sim_op.setText(teleManager.getSimOperatorName());
                     sim_imsi.setText(teleManager.getSubscriberId());
                     net_operator.setText(teleManager.getNetworkOperatorName());
                     net_type.setText(Helper.getPhoneType(teleManager.getPhoneType()) + " - " + Helper.getNetworkType(teleManager.getNetworkType()));
                     msisdn.setText(teleManager.getLine1Number());
-                    cid.setText(Integer.toString(Helper.getGSMCid(teleManager)));
-                    lac.setText(Integer.toString(Helper.getGSMLac(teleManager)));
+                    cid.setText(cidValue);
+                    lac.setText(lacValue);
                     gsmCellLocation.setText(Integer.toString(gsm_signal));
+
 
                     Snackbar.make(view, R.string.data_updated, Snackbar.LENGTH_LONG)
                             .setAction(R.string.clear, new View.OnClickListener() {
@@ -127,7 +153,6 @@ public class MainActivity extends AppCompatActivity {
                 if (teleManager.getNetworkType() == TelephonyManager.NETWORK_TYPE_LTE){
 
                     int ltesignal = Integer.parseInt(parts[9]);
-
                     // check to see if it get's the right signal in dB, a signal below -2
                     if(ltesignal < -2) {
                         gsm_signal = ltesignal;
@@ -145,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         teleManager.listen(listener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+
 
     }
 
@@ -223,4 +249,120 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    public void cellTowerLocation(View view) {
+        if (cidValue!=null && lacValue!=null && mccValue!=null && mncValue!=null) {
+            new HttpPostTask().execute(cidValue, lacValue, mccValue, mncValue);
+        } else {
+            Toast.makeText(context, R.string.nodata, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void signalGraph(View view) {
+        if (gsm_signal!=0 && cidValue!=null) {
+            Intent intent = new Intent(this, GraphActivity.class);
+            intent.putExtra(GSM_SIGNAL, gsm_signalValue);
+            startActivity(intent);
+        } else {
+            Toast.makeText(context, R.string.nodata, Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private class HttpPostTask extends AsyncTask<String, Void, String> {
+
+        ProgressDialog pd;
+
+        @Override
+        protected void onPreExecute() {
+            pd = new ProgressDialog(context);
+            pd.setTitle("Getting Location");
+            pd.setMessage("Please Wait...");
+            pd.setCancelable(false);
+            pd.setIndeterminate(true);
+            pd.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            String result = null;
+
+            HttpClient httpclient =  new DefaultHttpClient();
+            HttpPost httpost = new HttpPost("https://www.googleapis.com/geolocation/v1/geolocate?key=" + API_KEY);
+
+            StringEntity se;
+
+            try {
+                JSONObject cellTower = new JSONObject();
+                cellTower.put("cellId", params[0]);
+                cellTower.put("locationAreaCode", params[1]);
+                cellTower.put("mobileCountryCode", params[2]);
+                cellTower.put("mobileNetworkCode", params[3]);
+
+                JSONArray cellTowers = new JSONArray();
+                cellTowers.put(cellTower);
+
+                JSONObject rootObject = new JSONObject();
+                rootObject.put("cellTowers", cellTowers);
+
+                se = new StringEntity(rootObject.toString());
+                se.setContentType("application/json");
+
+                httpost.setEntity(se);
+                httpost.setHeader("Accept", "application/json");
+                httpost.setHeader("Content-type", "application/json");
+
+                ResponseHandler<String> responseHandler = new BasicResponseHandler();
+                String response = httpclient.execute(httpost, responseHandler);
+
+                result = response;
+            } catch (Exception e) {
+                final String err = e.getMessage();
+                runOnUiThread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Toast.makeText(context, "Exception requesting location: " + err, Toast.LENGTH_LONG).show();
+                    }
+
+                });
+                e.printStackTrace();
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            if (pd != null) {
+                try {
+                    pd.dismiss();
+                }
+                catch (Exception e) {}
+            }
+
+            if (result != null) {
+                try {
+                    JSONObject jsonResult = new JSONObject(result);
+                    JSONObject location = jsonResult.getJSONObject("location");
+                    String lat, lng;
+                    lat = location.getString("lat");
+                    lng = location.getString("lng");
+
+                    if ((lat != null) &&
+                            (!lat.isEmpty()) &&
+                            (lng != null) &&
+                            (!lng.isEmpty())) {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://maps.google.com/maps?q=" + lat + "," + lng + "&iwloc=A")));
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(context, "Exception parsing response: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
 }
+

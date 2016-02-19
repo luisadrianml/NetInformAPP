@@ -1,16 +1,8 @@
 package com.commovil.luisadrianml.networkinformationapp;
 
-import android.content.Context;
-import android.os.RemoteException;
-import android.telephony.CellLocation;
-import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
-import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 
-/**
- * Created by LuisMartinez on 02/18/16.
- */
 public class Helper {
 
     protected static String getPhoneType(int phoneType) {
@@ -106,20 +98,11 @@ public class Helper {
     protected static int getGSMCid(TelephonyManager telephonyManager) {
         GsmCellLocation cellGsmLocation = (GsmCellLocation) telephonyManager.getCellLocation();
         return cellGsmLocation.getCid();
-        //String gsm_cell_location = cellGsmLocation.toString();
-
-        //int gsm_ss = signalStrength.getGsmSignalStrength();
-        //int gsm_ber = signalStrength.getGsmBitErrorRate();
     }
 
     protected static int getGSMLac(TelephonyManager telephonyManager) {
         GsmCellLocation cellGsmLocation = (GsmCellLocation) telephonyManager.getCellLocation();
         return cellGsmLocation.getLac();
-    }
-
-    protected static String getGsmCellLocation(TelephonyManager telephonyManager) {
-        GsmCellLocation cellGsmLocation = (GsmCellLocation) telephonyManager.getCellLocation();
-        return cellGsmLocation.toString();
     }
 
 }
